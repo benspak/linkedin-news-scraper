@@ -2,6 +2,7 @@ chrome.runtime.onInstalled.addListener(() => {
     console.log('Extension successfully installed!');
 });
 
+// SCRAPE
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "startScraping") {
         chrome.tabs.create({ url: "https://www.linkedin.com/feed/", active: true }, function(newTab) {
@@ -19,6 +20,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     return true; // Keeps the messaging channel open
 });
+
+// SHOW DASHBOARD
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "showDashboard") {
+        // Open the dashboard in a new tab
+        chrome.tabs.create({url: 'dashboard.html'});
+        /*
+        chrome.action.onClicked.addListener(() => {
+            chrome.tabs.create({url: 'dashboard.html'});
+        });
+        */
+        sendResponse({status: "Showing Dashboard"});
+    }
+    return true; // Keeps the messaging channel open
+});
+
+function testScript() {
+    console.log("Test script executed");
+    window.alert("Test Dash");
+}
 
 function pageScript() {
     console.log("Page script executed");
