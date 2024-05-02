@@ -26,11 +26,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "showDashboard") {
         // Open the dashboard in a new tab
         chrome.tabs.create({url: 'dashboard.html'});
-        /*
-        chrome.action.onClicked.addListener(() => {
-            chrome.tabs.create({url: 'dashboard.html'});
-        });
-        */
         sendResponse({status: "Showing Dashboard"});
     }
     return true; // Keeps the messaging channel open
