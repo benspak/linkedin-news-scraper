@@ -31,16 +31,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // Keeps the messaging channel open
 });
 
-function testScript() {
-    console.log("Test script executed");
-    window.alert("Test Dash");
-}
-
 function pageScript() {
-    console.log("Page script executed");
-    // Placeholder for scraping functionality
-    // Additional functions like clickShowMoreButton, getTitleAndURI, downloadCSV would be added here
-        // Main function to handle scraping, should be injected into the LinkedIn page
     function mainContentScript() {
         clickShowMoreButton();
         setTimeout(getTitleAndURI, 2000);
@@ -55,44 +46,24 @@ function pageScript() {
         }
     }
 
-function getTitleAndURI() {
-    const storyLineArray = document.querySelectorAll('.news-module__storyline');
-    const csvRows = ["Title,URL,Date"];  // Added Date column in the header
+    function getTitleAndURI() {
+        const storyLineArray = document.querySelectorAll('.news-module__storyline');
+        const data = [];
+        const currentDate = new Date().toISOString().split('T')[0];  // Gets the current date in YYYY-MM-DD format
 
-    const currentDate = new Date().toISOString().split('T')[0];  // Gets the current date in YYYY-MM-DD format
+        storyLineArray.forEach(element => {
+            let title = element.innerText.replace(/,/g, '');  // Remove commas to maintain integrity
+            let url = '';
+            const linkElement = element.querySelector('a');
+            if (linkElement) {
+                url = linkElement.href;
+            }
+            data.push({title: title, url: url, date: currentDate});
+        });
 
-    storyLineArray.forEach(element => {
-        let title = element.innerText.replace(/,/g, '');  // Remove commas to maintain CSV integrity
-        let url = '';
-        const linkElement = element.querySelector('a');
-        if (linkElement) {
-            url = linkElement.href;
-        } else {
-            console.log("No URL found in element", element);
-        }
-        // Append the current date to each row
-        csvRows.push(`"${title}",${url},${currentDate}`);
-    });
-
-    downloadCSV(csvRows.join('\n'));
-}
-
-
-    function downloadCSV(csvString) {
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", "news_data.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    // Function possibly called from the popup for direct scraping without opening a new tab
-    function startUp() {
-        // Could log a message or handle a direct scrape if the current tab is LinkedIn
-        console.log('Direct scrape function called, ensure current tab is appropriate for scraping.');
+        chrome.storage.local.set({newsData: data}, () => {
+            console.log("Data stored locally");
+        });
     }
     mainContentScript();
 }
