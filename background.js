@@ -48,7 +48,7 @@ function pageScript() {
 
     function getTitleAndURI() {
         const storyLineArray = document.querySelectorAll('.news-module__storyline');
-        const data = [];
+        const newData = [];
         const currentDate = new Date().toISOString().split('T')[0];  // Gets the current date in YYYY-MM-DD format
 
         storyLineArray.forEach(element => {
@@ -58,12 +58,33 @@ function pageScript() {
             if (linkElement) {
                 url = linkElement.href;
             }
-            data.push({title: title, url: url, date: currentDate});
+            newData.push({title: title, url: url, date: currentDate});
         });
 
-        chrome.storage.local.set({newsData: data}, () => {
-            console.log("Data stored locally");
+        chrome.storage.local.get({newsData: []}, (result) => {
+            const existingData = result.newsData;
+            const updatedData = [...existingData];
+
+            newData.forEach(item => {
+                // Check if the item is already in the storage
+                if (!existingData.some(entry => entry.title === item.title && entry.url === item.url)) {
+                    updatedData.push(item);  // Add only unique items
+                }
+            });
+
+            chrome.storage.local.set({newsData: updatedData}, () => {
+                console.log("Data updated and stored locally");
+                // Show notification
+                chrome.notifications.create({
+                    type: 'basic',
+                    iconUrl: 'icon.png',
+                    title: 'Data Scraped',
+                    message: 'New unique data has been successfully scraped and added to the local storage.'
+                });
+            });
         });
     }
+
+
     mainContentScript();
 }
