@@ -52,7 +52,8 @@ function pageScript() {
         const currentDate = new Date().toISOString().split('T')[0];  // Gets the current date in YYYY-MM-DD format
 
         storyLineArray.forEach(element => {
-            let title = element.innerText.replace(/,/g, '');  // Remove commas to maintain integrity
+            let headlineElement = element.querySelector('.news-module__headline'); // Target the correct element for title
+            let title = headlineElement ? headlineElement.innerText.replace(/,/g, '') : 'No title'; // Remove commas to maintain integrity, fallback to 'No title' if not found
             let url = '';
             const linkElement = element.querySelector('a');
             if (linkElement) {
@@ -85,6 +86,6 @@ function pageScript() {
         });
     }
 
-
     mainContentScript();
+
 }

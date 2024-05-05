@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="card" style="width: 18rem; margin: 10px;">
                         <div class="card-body">
                             <h5 class="card-title">${item.title}</h5>
-                            <p class="card-text">URL: <a href="${item.url}" target="_blank">${item.url}</a></p>
+                            <p class="card-text"><a href="${item.url}" target="_blank">${item.url}</a></p>
                             <p class="card-text">Date: ${item.date}</p>
                         </div>
                     </div>
