@@ -15,6 +15,24 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
+  // Render News Items
+  useEffect(() => {
+    const newsContainer = document.getElementById('news-container');
+    if (data.length > 0) {
+      newsContainer.innerHTML = data.map(item => `
+        <div class="card" style="width: 18rem; margin: 10px;">
+          <div class="card-body">
+            <h5 class="card-title">${item.title}</h5>
+            <p class="card-text"><a href="${item.url}" target="_blank">${item.url}</a></p>
+            <p class="card-text">Date: ${item.date}</p>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      newsContainer.innerHTML = '<p>No news data available. Go scrape, first.</p>';
+    }
+  }, [data]);
+
   const handleUpload = async () => {
     if (!file) return alert("Please select a file");
 
@@ -47,6 +65,10 @@ const Dashboard = () => {
     if (response.ok) {
       const result = await response.json();
       const uniqueData = filterDuplicates(result);
+
+      // Sort data by date in descending order
+      uniqueData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
       setData(uniqueData);
     } else {
       alert("Session expired. Please log in again.");
@@ -54,6 +76,7 @@ const Dashboard = () => {
       navigate("/login");
     }
   };
+
 
   // ✅ Function to remove duplicates based on (date, title, url)
   const filterDuplicates = (entries) => {
@@ -73,15 +96,8 @@ const Dashboard = () => {
       <h2>Dashboard</h2>
       <input type="file" onChange={(e) => setFile(e.target.files[0])} />
       <button onClick={handleUpload}>Upload CSV</button>
-
-      <h3>CSV Data</h3>
-      <ul>
-        {data.map((entry, index) => (
-          <li key={index}>
-            {entry.date} - <a href={entry.url} target="_blank" rel="noopener noreferrer">{entry.title}</a>
-          </li>
-        ))}
-      </ul>
+      <h3>Past News</h3>
+        <div class="row" id="news-container"></div>
     </div>
   );
 };

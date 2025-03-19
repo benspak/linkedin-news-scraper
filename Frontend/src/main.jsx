@@ -5,6 +5,7 @@ import App from "./App";
 import Signup from "./Signup";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
